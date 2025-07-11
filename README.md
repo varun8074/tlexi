@@ -22,7 +22,7 @@
 
 •	You can find the example input value and it can be modified as per requirement
 
-Example input/output:
+### Example input/output:
 ## Input:
 ```
 {
