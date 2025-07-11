@@ -4,9 +4,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from transformers import pipeline
-from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
-import getpass
 
 
 # 📄 Load and chunk PDF + DOCX files
