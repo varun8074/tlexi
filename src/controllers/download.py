@@ -29,34 +29,49 @@ def load_documents(folder_path):
 
     return documents
 
+
 def split_documents(documents):
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     return splitter.split_documents(documents)
 
+
 # 🧠 Create and save FAISS vectorstore
 def create_faiss_vectorstore(docs):
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
     vectorstore = FAISS.from_documents(docs, embeddings)
     vectorstore.save_local("faiss_index")
     print("✅ FAISS index created and saved.")
     return vectorstore
 
+
 # 📦 Load FAISS index if it exists
 def load_vectorstore():
     index_path = "faiss_index/index.faiss"
     if not os.path.exists(index_path):
-        raise FileNotFoundError("❌ FAISS index not found. Run the index creation first.")
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+        raise FileNotFoundError(
+            "❌ FAISS index not found. Run the index creation first."
+        )
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+    return FAISS.load_local(
+        "faiss_index", embeddings, allow_dangerous_deserialization=True
+    )
 
 
 def downloader():
     pdf_folder = "src/pdfs"
 
     if not os.path.exists(pdf_folder) or len(os.listdir(pdf_folder)) == 0:
-        raise FileNotFoundError("❌ Please add at least one PDF file in the 'pdfs/' folder.")
+        raise FileNotFoundError(
+            "❌ Please add at least one PDF file in the 'pdfs/' folder."
+        )
 
-    if not os.path.exists("faiss_index") or not os.path.exists(os.path.join("faiss_index", "index.faiss")):
+    if not os.path.exists("faiss_index") or not os.path.exists(
+        os.path.join("faiss_index", "index.faiss")
+    ):
         print("📂 FAISS index not found. Creating one from PDFs...")
         raw_docs = load_documents(pdf_folder)
         docs = split_documents(raw_docs)
@@ -71,6 +86,3 @@ def downloader():
     retriever = vectorstore.as_retriever()
 
     return retriever, qa_pipeline
-
-
-    
