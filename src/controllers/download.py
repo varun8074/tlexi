@@ -50,38 +50,27 @@ def load_vectorstore():
     return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
 
 
-# 🏁 Entry point
-import os
-from transformers import pipeline
-
 def downloader():
     pdf_folder = "src/pdfs"
 
     if not os.path.exists(pdf_folder) or len(os.listdir(pdf_folder)) == 0:
-        return "❌ Please add at least one PDF file in the 'pdfs/' folder."
+        raise FileNotFoundError("❌ Please add at least one PDF file in the 'pdfs/' folder.")
 
-    try:
-        if not os.path.exists(os.path.join("faiss_index")) or \
-           not os.path.exists(os.path.join("faiss_index", "index.faiss")):
+    if not os.path.exists("faiss_index") or not os.path.exists(os.path.join("faiss_index", "index.faiss")):
+        print("📂 FAISS index not found. Creating one from PDFs...")
+        raw_docs = load_documents(pdf_folder)
+        docs = split_documents(raw_docs)
+        vectorstore = create_faiss_vectorstore(docs)
+    else:
+        print("📦 Loading existing FAISS index...")
+        vectorstore = load_vectorstore()
 
-            print("📂 FAISS index not found. Creating one from PDFs...")
-            raw_docs = load_documents(pdf_folder)
-            docs = split_documents(raw_docs)
-            vectorstore = create_faiss_vectorstore(docs)
+    print("🔁 Using local Hugging Face model (flan-t5-base)...")
+    qa_pipeline = pipeline("text2text-generation", model="google/flan-t5-base")
 
-        else:
-            print("📦 Loading existing FAISS index...")
-            vectorstore = load_vectorstore()
+    retriever = vectorstore.as_retriever()
 
-        print("🔁 Using local Hugging Face model (flan-t5-base)...")
-        qa_pipeline = pipeline("text2text-generation", model="google/flan-t5-base")
-
-        retriever = vectorstore.as_retriever()
-
-        return retriever, qa_pipeline
-
-    except Exception as e:
-        return f"⚠️ Error occurred: {str(e)}"
+    return retriever, qa_pipeline
 
 
     
