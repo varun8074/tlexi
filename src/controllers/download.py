@@ -64,8 +64,8 @@ def downloader():
         return "❌ Please add at least one PDF file in the 'pdfs/' folder."
 
     try:
-        if not os.path.exists(os.path.join("src", "faiss_index")) or \
-           not os.path.exists(os.path.join("src", "faiss_index", "index.faiss")):
+        if not os.path.exists(os.path.join("faiss_index")) or \
+           not os.path.exists(os.path.join("faiss_index", "index.faiss")):
 
             print("📂 FAISS index not found. Creating one from PDFs...")
             raw_docs = load_documents(pdf_folder)
