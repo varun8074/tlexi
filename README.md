@@ -1,6 +1,7 @@
 # **Setup instructions**:
 •	clone this repository AS HTTPS or download the zip file and extract the files
 •	download python, preferred 3.10.0
+
 •	download requirements using command: pip install -r requirements.txt
 # **Test the API**:
 •	it Can be tested through the hosted link or in the local setup
